@@ -103,8 +103,10 @@ class Solver(object):
         #   Hint 2: don't forget to divide number of samples when computing    #
         #   the gradient!                                                      #
         ########################################################################
-
-
+        model_forward = model.forward(X_train)
+        _, loss_grad = loss_func(model_forward, y_train)
+        grad = model.backward(loss_grad)
+        opt.step(grad)
         pass
 
         ########################################################################

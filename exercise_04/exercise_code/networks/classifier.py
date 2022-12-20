@@ -42,7 +42,7 @@ class Classifier(Network):
         # add a column of 1s to the data for the bias term
         batch_size, _ = X.shape
         X = np.concatenate((X, np.ones((batch_size, 1))), axis=1)
-        
+        self.cache = X
         # output variable
         y = None
 
@@ -53,8 +53,8 @@ class Classifier(Network):
         # Also, save in self.cache an array of all the relevant variables that #
         # you will need to use in the backward() function. E.g.: (X, ...)      #
         ########################################################################
-
-
+        y = X.dot(self.W)
+        y = self.sigmoid(y)
         pass
 
         ########################################################################
@@ -86,8 +86,11 @@ class Classifier(Network):
         # x, and could be calculated with the result, calculated earlier at    #
         # the forward() function.                                              #
         ########################################################################
+        X, y = self.cache
+        dz_dy = y * (1 - y)
+        dl_dy = dout * dz_dy
 
-
+        dW = X.T.dot(dl_dy)
         pass
 
         ########################################################################
@@ -109,7 +112,7 @@ class Classifier(Network):
         # Implement the sigmoid function over the input x.                     #
         # Return out.                                                          #
         ########################################################################
-
+        out = 1 / (1 + np.exp(-x))
 
         pass
 
