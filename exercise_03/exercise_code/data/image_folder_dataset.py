@@ -77,7 +77,7 @@ class ImageFolderDataset(Dataset):
         # TODO:                                                                #
         # Return the length of the dataset (number of images)                  #
         ########################################################################
-
+        length = len(self.images)
         pass
 
         ########################################################################
@@ -115,6 +115,15 @@ class ImageFolderDataset(Dataset):
         #   The labels are supposed to be numbers, in the range of [0, 9],     #
         #   not strings.                                                       #    
         ########################################################################
+        label = self.labels[index]
+        path = self.images[index]
+        image = self.load_image_as_numpy(path)
+        if self.transform is not None:
+            image = self.transform(image)
+        data_dict = {
+            "image": image,
+            "label": label,
+        }
 
         pass
 
