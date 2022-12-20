@@ -23,7 +23,17 @@ class MyPytorchModel(pl.LightningModule):
         ########################################################################
         # TODO: Initialize your model!                                         #
         ########################################################################
-
+        self.model = nn.Sequential(
+            nn.Linear(self.hparams.input_size, 500),
+            nn.BatchNorm1d(500),
+            nn.ReLU(),
+            nn.Dropout(p=0.5),
+            nn.Linear(500, 100),
+            nn.BatchNorm1d(100),
+            nn.ReLU(),
+            nn.Dropout(p=0.5),
+            nn.Linear(100, self.hparams.num_classes)
+        )
 
         pass
 
@@ -89,7 +99,7 @@ class MyPytorchModel(pl.LightningModule):
         ########################################################################
         # TODO: Define your optimizer.                                         #
         ########################################################################
-
+        optim = torch.optim.Adam(self.model.parameters(), self.hparams["learning_rate"])
 
         pass
 
@@ -142,7 +152,12 @@ class CIFAR10DataModule(pl.LightningDataModule):
         # TODO: Define your transforms (convert to tensors, normalize).        #
         # If you want, you can also perform data augmentation!                 #
         ########################################################################
-
+        my_transform = transforms.Compose([
+            transforms.RandomApply((transforms.RandomHorizontalFlip(p=0.8),
+                                    transforms.RandomResizedCrop((32, 32))), p=0.1),
+            transforms.ToTensor(),
+            transforms.Normalize(mean, std)
+        ])
         pass
 
         ########################################################################
