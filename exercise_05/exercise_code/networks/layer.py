@@ -18,7 +18,8 @@ class Sigmoid:
         # TODO:                                                                #
         # Implement the forward pass of Sigmoid activation function            #
         ########################################################################
-
+        out = 1 / (1 + np.exp(-x))
+        cache = out
         pass
 
         ########################################################################
@@ -39,7 +40,7 @@ class Sigmoid:
         # TODO:                                                                #
         # Implement the backward pass of Sigmoid activation function           #
         ########################################################################
-
+        dx = dout * cache * (1 - cache)
         pass
 
         ########################################################################
@@ -65,7 +66,8 @@ class Relu:
         # TODO:                                                                #
         # Implement the forward pass of Relu activation function               #
         ########################################################################
-
+        out = np.maximum(x, 0)
+        cache = x
         pass
 
         ########################################################################
@@ -86,7 +88,9 @@ class Relu:
         # TODO:                                                                #
         # Implement the backward pass of Relu activation function              #
         ########################################################################
-
+        x = cache
+        dx = dout
+        dx[x < 0] = 0
         pass
 
         ########################################################################
@@ -115,7 +119,8 @@ def affine_forward(x, w, b):
     # TODO: Implement the affine forward pass. Store the result in out.    #
     # You will need to reshape the input into rows.                        #
     ########################################################################
-
+    x_reshaped = np.reshape(x, (x.shape[0], -1))
+    out = x_reshaped.dot(w) + b
     pass
 
     ########################################################################
@@ -143,10 +148,12 @@ def affine_backward(dout, cache):
     ########################################################################
     # TODO: Implement the affine backward pass.                            #
     ########################################################################
-
-
+    dw = np.reshape(x, (x.shape[0], -1)).T.dot(dout)
+    dw = np.reshape(dw, w.shape)
+    db = np.sum(dout, axis=0, keepdims=False)
+    dx = dout.dot(w.T)
+    dx = np.reshape(dx, x.shape)
     pass
-
     ########################################################################
     #                           END OF YOUR CODE                           #
     ########################################################################
