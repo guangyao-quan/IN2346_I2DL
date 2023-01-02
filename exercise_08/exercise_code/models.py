@@ -90,7 +90,7 @@ class Autoencoder(nn.Module):
         # Define models
         self.encoder = encoder
         self.decoder = decoder
-        self.device = hparams.get("device", torch.device("cpu"))
+        self.device = hparams.get("device", torch.device("mps"))
         self.set_optimizer()
 
     def forward(self, x):
@@ -222,7 +222,7 @@ class Classifier(nn.Module):
         self.hparams = hparams
         self.encoder = encoder
         self.model = nn.Identity()
-        self.device = hparams.get("device", torch.device("cpu"))
+        self.device = hparams.get("device", torch.device("mps"))
         ########################################################################
         # TODO:                                                                #
         # Given an Encoder, finalize your classifier, by adding a classifier   #   
