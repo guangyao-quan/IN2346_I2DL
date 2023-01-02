@@ -69,7 +69,6 @@ class Decoder(nn.Module):
 
         nn.init.kaiming_normal_(self.decoder[0].weight)
         self.decoder[0].bias.data.fill_(0.05)
-
         pass
 
         ########################################################################
