@@ -2,16 +2,47 @@
 import torch
 import torch.nn as nn
 import pytorch_lightning as pl
+import torchvision.models as models
+import torch.nn.functional as F
 
-class SegmentationNN(pl.LightningModule):
+class SegmentationNN(nn.Module):
 
     def __init__(self, num_classes=23, hparams=None):
         super().__init__()
-        self.save_hyperparameters(hparams)
+        self.num_classes = num_classes
         #######################################################################
         #                             YOUR CODE                               #
         #######################################################################
+        num_filters = 32
+        kernel_size = 3
+        padding = 1
+        stride = 1
 
+        self.cnn = nn.Sequential(
+
+            nn.Conv2d(3, 30, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(30, 60, kernel_size=3, padding=1),
+            nn.ReLU(),
+
+            nn.MaxPool2d(2, 2),
+
+            nn.Conv2d(60, 120, kernel_size=3, padding=1),
+            nn.ReLU(),
+            nn.Conv2d(120, 240, kernel_size=3, padding=1),
+            nn.ReLU(),
+
+            nn.MaxPool2d(2, 2),
+
+            nn.Conv2d(240, 30, kernel_size=1, padding=0)
+        )
+        self.upsamling = nn.Sequential(
+            nn.Upsample(scale_factor=2, mode='bilinear'),
+            nn.Upsample(scale_factor=2, mode='bilinear'),
+        )
+        self.adjust = nn.Sequential(
+            nn.Conv2d(30, 23, kernel_size=1, padding=0)
+        )
         pass
 
         #######################################################################
@@ -29,7 +60,9 @@ class SegmentationNN(pl.LightningModule):
         #######################################################################
         #                             YOUR CODE                               #
         #######################################################################
-
+        x = self.cnn(x)
+        x = self.upsamling(x)
+        x = self.adjust(x)
         pass
 
         #######################################################################
