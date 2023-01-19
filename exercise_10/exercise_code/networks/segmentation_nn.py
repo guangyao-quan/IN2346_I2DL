@@ -2,48 +2,24 @@
 import torch
 import torch.nn as nn
 import pytorch_lightning as pl
+import torchvision
 import torchvision.models as models
 import torch.nn.functional as F
 
 class SegmentationNN(nn.Module):
 
-    def __init__(self, num_classes=23, hparams=None):
+    def __init__(self, num_classes=23):
         super().__init__()
         self.num_classes = num_classes
         #######################################################################
         #                             YOUR CODE                               #
         #######################################################################
-        num_filters = 32
-        kernel_size = 3
-        padding = 1
-        stride = 1
-
-        self.cnn = nn.Sequential(
-
-            nn.Conv2d(3, 30, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(30, 60, kernel_size=3, padding=1),
-            nn.ReLU(),
-
-            nn.MaxPool2d(2, 2),
-
-            nn.Conv2d(60, 120, kernel_size=3, padding=1),
-            nn.ReLU(),
-            nn.Conv2d(120, 240, kernel_size=3, padding=1),
-            nn.ReLU(),
-
-            nn.MaxPool2d(2, 2),
-
-            nn.Conv2d(240, 30, kernel_size=1, padding=0)
+        self.alex_net = models.AlexNet().features
+        self.net = nn.Sequential(
+            nn.Conv2d(256, num_classes, 1),
+            nn.Upsample(scale_factor=40, mode='bilinear')
         )
-        self.upsamling = nn.Sequential(
-            nn.Upsample(scale_factor=2, mode='bilinear'),
-            nn.Upsample(scale_factor=2, mode='bilinear'),
-        )
-        self.adjust = nn.Sequential(
-            nn.Conv2d(30, 23, kernel_size=1, padding=0)
-        )
-        pass
+
 
         #######################################################################
         #                           END OF YOUR CODE                          #
@@ -60,9 +36,8 @@ class SegmentationNN(nn.Module):
         #######################################################################
         #                             YOUR CODE                               #
         #######################################################################
-        x = self.cnn(x)
-        x = self.upsamling(x)
-        x = self.adjust(x)
+        x = self.alex_net(x)
+        x = self.net(x)
         pass
 
         #######################################################################
