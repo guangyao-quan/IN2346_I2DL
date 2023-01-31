@@ -1,8 +1,7 @@
+import torch
 import torch.nn as nn
 from torch.nn.utils.rnn import pack_padded_sequence
-
 from .rnn_nn import Embedding, RNN, LSTM
-
 
 class RNNClassifier(nn.Module):
     def __init__(self, num_embeddings, embedding_dim, hidden_size, use_lstm=True, **additional_kwargs):
@@ -14,7 +13,6 @@ class RNNClassifier(nn.Module):
             use_lstm: use LSTM if True, vanilla RNN if false, default=True
         """
         super().__init__()
-
         # Change this if you edit arguments
         hparams = {
             'num_embeddings': num_embeddings,
@@ -25,7 +23,6 @@ class RNNClassifier(nn.Module):
         }
         # if you do not inherit from lightning module use the following line
         self.hparams = hparams
-        
         # if you inherit from lightning module, comment out the previous line and use the following line
         # self.hparams.update(hparams)
         
@@ -34,10 +31,11 @@ class RNNClassifier(nn.Module):
         # hint: A basic architecture can have an embedding, an rnn             #
         # and an output layer                                                  #
         ########################################################################
-        
-
+        self.embedding = Embedding(self.hparams['num_embeddings'], self.hparams['embedding_dim'], 0)
+        self.lstm = nn.LSTM(self.hparams['embedding_dim'], self.hparams['hidden_size'])
+        self.fc = nn.Linear(in_features=self.hparams['hidden_size'], out_features=1)
+        self.sig = nn.Sigmoid()
         pass
-
         ########################################################################
         #                           END OF YOUR CODE                           #
         ########################################################################
@@ -54,17 +52,21 @@ class RNNClassifier(nn.Module):
                 positive, i.e. in range (0, 1)
         """
         output = None
-
         ########################################################################
         # TODO: Apply the forward pass of your network                         #
         # hint: Don't forget to use pack_padded_sequence if lenghts is not None#
         # pack_padded_sequence should be applied to the embedding outputs      #
         ########################################################################
-
+        embeddings = self.embedding(sequence)
+        if lengths is not None:
+            embeddings = pack_padded_sequence(embeddings, lengths)
+        _, (h_n, c_n) = self.lstm(embeddings)
+        dense = self.fc(h_n)
+        sig_out = self.sig(dense)
+        output = sig_out[-1, :, :].squeeze(1)
         pass
-
         ########################################################################
         #                           END OF YOUR CODE                           #
         ########################################################################
-
         return output
+

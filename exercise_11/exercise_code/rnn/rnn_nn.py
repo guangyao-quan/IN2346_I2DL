@@ -89,20 +89,25 @@ class LSTM(nn.Module):
         - input_size: Number of features in input vector
         - hidden_size: Dimension of hidden vector
         """
-
         self.hidden_size = hidden_size
         self.input_size = input_size
-
         ########################################################################
         # TODO: Build a one layer LSTM with an activation with the attributes  #
         # defined above and a forward function below. Use the nn.Linear()      #
         # function as your linear layers.                                      #
         # Initialise h and c as 0 if these values are not given.                #
         ########################################################################
-
-
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.W_forget = nn.Linear(input_size, hidden_size)
+        self.U_forget = nn.Linear(hidden_size, hidden_size)
+        self.W_in = nn.Linear(input_size, hidden_size)
+        self.U_in = nn.Linear(hidden_size, hidden_size)
+        self.W_out = nn.Linear(input_size, hidden_size)
+        self.U_out = nn.Linear(hidden_size, hidden_size)
+        self.W_cell = nn.Linear(input_size, hidden_size)
+        self.U_cell = nn.Linear(hidden_size, hidden_size)
         pass
-
         ########################################################################
         #                           END OF YOUR CODE                           #
         ########################################################################
@@ -135,14 +140,19 @@ class LSTM(nn.Module):
         # Fill the following lists and convert them to tensors
         h_seq = []
         c_seq = []
-
         ########################################################################
         #  TODO: Perform the forward pass                                      #
         ########################################################################
-
-
+        for t in range(seq_len):
+            x_t = x[t, :, :]
+            forget_t = torch.sigmoid(self.W_forget(x_t) + self.U_forget(h))
+            in_t = torch.sigmoid(self.W_in(x_t) + self.U_in(h))
+            out_t = torch.sigmoid(self.W_out(x_t) + self.U_out(h))
+            c = torch.mul(forget_t, c)
+            c += torch.mul(in_t, torch.tanh(self.W_cell(x_t) + self.U_cell(h)))
+            h = torch.mul(out_t, torch.tanh(c))
+            h_seq.append(h)
         pass
-
         ########################################################################
         #                           END OF YOUR CODE                           #
         ########################################################################
@@ -181,10 +191,9 @@ class Embedding(nn.Module):
         # TODO: Set self.weight to a parameter intialized with standard normal #
         # N(0, 1) and has a shape of (num_embeddings, embedding_dim).          #
         ########################################################################
-
-
+        self.weight = torch.empty((self.num_embeddings, self.embedding_dim))
+        torch.Tensor.normal_(self.weight)
         pass
-
         ########################################################################
         #                           END OF YOUR CODE                           #
         ########################################################################
@@ -210,8 +219,8 @@ class Embedding(nn.Module):
         # TODO: Select the indices in the inputs from the weight tensor        #
         # hint: It is very short                                               #
         ########################################################################
-
-
+        embeddings = weight[inputs]
+        embeddings.requires_grad = True
         pass
 
         ########################################################################
