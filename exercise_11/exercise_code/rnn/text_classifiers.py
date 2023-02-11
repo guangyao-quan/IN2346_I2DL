@@ -62,14 +62,22 @@ class RNNClassifier(nn.Module):
         # hint: Don't forget to use pack_padded_sequence if lenghts is not None#
         # pack_padded_sequence should be applied to the embedding outputs      #
         ########################################################################
-        embeddings = self.embedding(sequence)
+        """embeddings = self.embedding(sequence)
         if lengths is not None:
             embeddings = pack_padded_sequence(embeddings, lengths)
         _, (h_n, c_n) = self.lstm(embeddings)
         dense = self.fc(h_n)
         sig_out = self.sig(dense)
         output = sig_out[-1, :, :].squeeze(1)
-        pass
+        pass"""
+        # created by Copilot
+        embeddings = self.encoder(sequence)
+        if lengths is not None:
+            embeddings = pack_padded_sequence(embeddings, lengths)
+        rnn_out, _ = self.rnn(embeddings)
+        dense = self.decoder(rnn_out)
+        output = dense[-1, :, :].squeeze(1)
+        # created by Copilot
         ########################################################################
         #                           END OF YOUR CODE                           #
         ########################################################################
