@@ -211,18 +211,15 @@ class Embedding(nn.Module):
 
         # Ensure <eos> always return zeros
         # and padding gradient is always 0
-        weight = self.weight * self.padding_mask
-
-        embeddings = None
+        weight = self.weight.to("cuda") * self.padding_mask.to("cuda")
 
         ########################################################################
         # TODO: Select the indices in the inputs from the weight tensor        #
         # hint: It is very short                                               #
         ########################################################################
-        embeddings = weight[inputs]
+        embeddings = weight[inputs].to("cuda")
         embeddings.requires_grad = True
         pass
-
         ########################################################################
         #                           END OF YOUR CODE                           #
         ########################################################################
