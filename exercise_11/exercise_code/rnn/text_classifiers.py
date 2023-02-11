@@ -31,10 +31,15 @@ class RNNClassifier(nn.Module):
         # hint: A basic architecture can have an embedding, an rnn             #
         # and an output layer                                                  #
         ########################################################################
-        self.embedding = Embedding(self.hparams['num_embeddings'], self.hparams['embedding_dim'], 0)
+        """self.embedding = Embedding(self.hparams['num_embeddings'], self.hparams['embedding_dim'], 0)
         self.lstm = nn.LSTM(self.hparams['embedding_dim'], self.hparams['hidden_size'])
         self.fc = nn.Linear(in_features=self.hparams['hidden_size'], out_features=1)
-        self.sig = nn.Sigmoid()
+        self.sig = nn.Sigmoid()"""
+        # created by Copilot
+        self.encoder = nn.Embedding(self.hparams['num_embeddings'], self.hparams['embedding_dim'])
+        self.rnn = LSTM(self.hparams['embedding_dim'], self.hparams['hidden_size'])
+        self.decoder = nn.Linear(self.hparams['hidden_size'], 1) # 1 for bianry classification
+        # created by Copilot
         pass
         ########################################################################
         #                           END OF YOUR CODE                           #
